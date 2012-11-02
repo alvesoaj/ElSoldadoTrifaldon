@@ -1,0 +1,14 @@
+//Configura��o das imagens a serem carregadas
+
+//e para Estaticas, sem ainma��o
+
+e sol.png
+e chao.png
+e nuvens.png
+e grama.png
+e grama2.png
+e casa.png
+
+//s para imagens animadas em Sprites
+
+s spriteFormiga.png 8
