@@ -18,7 +18,7 @@ import javax.swing.Timer;
 import characters.Trifaldon;
 import sprites.CenarioAnimacao;
 import sprites.NuvensAnimacao;
-import utils.CarregadorImagens;
+import utils.ImageLoader;
 
 public class FirstLevel extends JPanel implements ActionListener {
 
@@ -26,29 +26,31 @@ public class FirstLevel extends JPanel implements ActionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Trifaldon trifaldon;
 	private final int PERIODO = 100;
 	private BufferedImage chao, sol;
 	private CenarioAnimacao grama, grama2, casa;
 	private NuvensAnimacao nuvem1, nuvem2;
-	private Trifaldon trifaldon;
-	private CarregadorImagens cdi;
+	private ImageLoader cdi;
 	private boolean justStarted = true;
 
-	public FirstLevel(Container cont, final Dimension d) {
-		setBackground(Color.CYAN);
+	public FirstLevel(Container cont, final Dimension d, Trifaldon t) {
 		setPreferredSize(d);
+		setBackground(Color.CYAN);
+		
+		trifaldon = t;
 
-		cdi = new CarregadorImagens("imagensConfig.wga");
-		initImgCenario();
+		cdi = new ImageLoader("imagensConfig.wga");
+
+		buildScenario();
 
 		setFocusable(true);
 		requestFocus();
 
 		addKeyListener(new KeyAdapter() {
-
 			@Override
 			public void keyPressed(KeyEvent e) {
-				processarTecla(e, 1);
+				keyDealer(e, "press");
 			}
 		});
 
@@ -56,29 +58,36 @@ public class FirstLevel extends JPanel implements ActionListener {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				processarTecla(e, 2);
+				keyDealer(e, "release");
 			}
 		});
 
 		new Timer(PERIODO, this).start(); // start the Swing timer
 	}
 
-	private void processarTecla(KeyEvent e, int tipo) {
-		int tecla = e.getKeyCode();
-		if (tipo == 1) {
-			if (tecla == KeyEvent.VK_RIGHT) {
+	private void keyDealer(KeyEvent e, String tipo) {
+		int key = e.getKeyCode();
+		if (tipo.compareTo("press") == 0) {
+			switch (key) {
+			case KeyEvent.VK_RIGHT:
 				trifaldon.setMovimento(2);
 				animarCenario(1);
-			}
-			if (tecla == KeyEvent.VK_LEFT) {
+				break;
+			case KeyEvent.VK_LEFT:
 				trifaldon.setMovimento(3);
 				animarCenario(2);
-			}
-			if (tecla == KeyEvent.VK_UP) {
+				break;
+			case KeyEvent.VK_UP:
 				trifaldon.setMovimento(4);
+				break;
 			}
-		} else if (tipo == 2) {
-			trifaldon.setMovimento(1);
+		} else if (tipo.compareTo("release") == 0) {
+			switch (key) {
+			case KeyEvent.VK_RIGHT:
+			case KeyEvent.VK_LEFT:
+				trifaldon.setMovimento(1);
+				break;
+			}
 		}
 	}
 
@@ -94,7 +103,7 @@ public class FirstLevel extends JPanel implements ActionListener {
 		}
 	}
 
-	private void initImgCenario() {
+	private void buildScenario() {
 		chao = cdi.getImagem("chao");
 
 		sol = cdi.getImagem("sol");

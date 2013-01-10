@@ -5,7 +5,7 @@
 package sprites;
 
 import java.awt.image.BufferedImage;
-import utils.CarregadorImagens;
+import utils.ImageLoader;
 
 /**
  *
@@ -18,7 +18,7 @@ public class NuvensAnimacao {
     private long tempTotAnim;
     private BufferedImage bi;
 
-    public NuvensAnimacao(String nomeImg, int x, int y, int p, double d, int v, CarregadorImagens ci) {
+    public NuvensAnimacao(String nomeImg, int x, int y, int p, double d, int v, ImageLoader ci) {
         variacao = v;
         periodoAnim = p;
         duracaoSeq = d;

@@ -5,7 +5,7 @@
 package sprites;
 
 import java.awt.image.BufferedImage;
-import utils.CarregadorImagens;
+import utils.ImageLoader;
 
 /**
  *
@@ -16,7 +16,7 @@ public class CenarioAnimacao {
     private int posX, posY, tamL;
     private BufferedImage bi;
 
-    public CenarioAnimacao(String nomeImg, int x, int y, CarregadorImagens ci) {
+    public CenarioAnimacao(String nomeImg, int x, int y, ImageLoader ci) {
         bi = ci.getImagem(nomeImg);
         tamL = bi.getWidth();
         posX = x;

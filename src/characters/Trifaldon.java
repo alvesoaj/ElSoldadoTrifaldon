@@ -6,7 +6,7 @@ package characters;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import utils.AnimadorImagens;
-import utils.CarregadorImagens;
+import utils.ImageLoader;
 
 public class Trifaldon {
 
@@ -20,7 +20,7 @@ public class Trifaldon {
 	private boolean pulando = false;
 
 	public Trifaldon(String nomeImg, int p, double d, int x, int y,
-			CarregadorImagens ci) {
+			ImageLoader ci) {
 		periodo = p;
 		direita = ci.getLista(nomeImg, 4, 7);
 		esquerda = ci.getLista(nomeImg, 0, 3);
