@@ -5,7 +5,7 @@ package characters;
  */
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import utils.AnimadorImagens;
+import utils.ImageAnimator;
 import utils.ImageLoader;
 
 public class Trifaldon {
@@ -16,18 +16,18 @@ public class Trifaldon {
 	private final int TAM_MOV = 7;
 	private int posX, posY, periodo, linhaY, movimento, gravidade, contador;
 	private ArrayList direita, esquerda;
-	private AnimadorImagens animacao, animD, animE;
+	private ImageAnimator animacao, animD, animE;
 	private boolean pulando = false;
 
-	public Trifaldon(String nomeImg, int p, double d, int x, int y,
+	public Trifaldon(ArrayList<BufferedImage> sprite, int p, double d, int x, int y,
 			ImageLoader ci) {
 		periodo = p;
 		direita = ci.getLista(nomeImg, 4, 7);
 		esquerda = ci.getLista(nomeImg, 0, 3);
 		duracaoSeq = d;
 
-		animD = new AnimadorImagens(direita, periodo, TMP_DUR, true);
-		animE = new AnimadorImagens(esquerda, periodo, TMP_DUR, true);
+		animD = new ImageAnimator(direita, periodo, TMP_DUR, true);
+		animE = new ImageAnimator(esquerda, periodo, TMP_DUR, true);
 
 		animacao = animD;
 		animacao.stop();

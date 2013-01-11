@@ -23,21 +23,23 @@ import javax.imageio.ImageIO;
  */
 public class ImageLoader {
 
+	/**
+	 * 
+	 */
 	private final String IMG_DIR = "/images/";
 	private HashMap<String, ArrayList<BufferedImage>> imageMap;
-	private HashMap<String, String> imageList;
 	private GraphicsConfiguration gc;
 
 	public ImageLoader() {
-	}
-
-	public boolean loadByFile(String fileName) {
 		imageMap = new HashMap<String, ArrayList<BufferedImage>>();
-		imageList = new HashMap<String, String>();
 
 		GraphicsEnvironment ge = GraphicsEnvironment
 				.getLocalGraphicsEnvironment();
 		gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+	}
+
+	public HashMap<String, ArrayList<BufferedImage>> loadByFile(String fileName) {
+		imageMap.clear();
 
 		String path = IMG_DIR + fileName;
 
@@ -60,7 +62,7 @@ public class ImageLoader {
 					getStaticImage(imageName);
 				} else if (ch == 's') {
 					int amount = getAmount(linha);
-					
+
 					getSpriteImage(imageName, amount);
 				} else {
 					System.out.println("Linha não reconhecida: " + linha);
@@ -71,7 +73,7 @@ public class ImageLoader {
 			System.out.println("Erro na leitura: " + fileName);
 			System.exit(1);
 		}
-		return true;
+		return imageMap;
 	}
 
 	public ArrayList<BufferedImage> getStaticImage(String in) {
@@ -130,7 +132,7 @@ public class ImageLoader {
 	private ArrayList<BufferedImage> getSpriteImage(String in, int amount) {
 		if (!imageMap.containsKey(in)) {
 			BufferedImage[] bi = loadSprite(in, amount);
-			
+
 			if (bi != null) {
 				ArrayList<BufferedImage> imgList = new ArrayList<BufferedImage>();
 				for (int x = 0; x < bi.length; x++) {
@@ -141,6 +143,13 @@ public class ImageLoader {
 				return imgList;
 			}
 		} else {
+			return imageMap.get(in);
+		}
+		return null;
+	}
+
+	public ArrayList<BufferedImage> getSprite(String in) {
+		if (imageMap.containsKey(in)) {
 			return imageMap.get(in);
 		}
 		return null;
@@ -170,85 +179,25 @@ public class ImageLoader {
 				BufferedImage[] sprite = new BufferedImage[amount];
 
 				for (int i = 0; i < amount; i++) {
-					sprite[i] = gc.createCompatibleImage(imgWidth, imgHeight, imgTransparency);
-					
+					sprite[i] = gc.createCompatibleImage(imgWidth, imgHeight,
+							imgTransparency);
+
 					Graphics2D imgGraph = sprite[i].createGraphics();
 
 					// copiando a image
-					imgGraph.drawImage(image, 0, 0, imgWidth, imgHeight, i * imgWidth, 0,
-							(i * imgWidth) + imgWidth, imgHeight, null);
-					
+					imgGraph.drawImage(image, 0, 0, imgWidth, imgHeight, i
+							* imgWidth, 0, (i * imgWidth) + imgWidth,
+							imgHeight, null);
+
 					imgGraph.dispose();
 				}
 				return sprite;
-			}else{
+			} else {
 				System.out.println("Erro: Imagem não encontrada");
 			}
-		}else{
+		} else {
 			System.out.println("Erro: Quantidade igual a 0");
 		}
 		return null;
-	}
-
-	public BufferedImage getImage(String name) {
-		ArrayList<?> imsList = (ArrayList<?>) imageMap.get(name);
-		if (imsList == null) {
-			System.out.println("No image(s) stored under " + name);
-			return null;
-		}
-
-		return (BufferedImage) imsList.get(0);
-	}
-
-	public ArrayList<?> getLista(String name, int i, int f) {
-		ArrayList imsList = (ArrayList) imageMap.get(name);
-		ArrayList temp = new ArrayList();
-
-		if (imsList == null) {
-			System.out.println("No image(s) stored under " + name);
-			return null;
-		}
-
-		for (int x = 0; x < (f - i); x++) {
-			temp.add(imsList.get(i + x));
-		}
-
-		return temp;
-	}
-
-	public boolean estaCarregado(String name) {
-		ArrayList imsList = (ArrayList) imageMap.get(name);
-		if (imsList == null) {
-			return false;
-		}
-		return true;
-	}
-
-	public int numImagens(String name) {
-		ArrayList imsList = (ArrayList) imageMap.get(name);
-		if (imsList == null) {
-			System.out.println("No image(s) stored under " + name);
-			return 0;
-		}
-		return imsList.size();
-	}
-
-	public BufferedImage getImagem(String name, int posn) {
-		ArrayList imsList = (ArrayList) imageMap.get(name);
-		if (imsList == null) {
-			System.out.println("No image(s) stored under " + name);
-			return null;
-		}
-
-		int size = imsList.size();
-		if (posn < 0) {
-			return (BufferedImage) imsList.get(0); // return first image
-		} else if (posn >= size) {
-			// System.out.println("No " + name + " image at position " + posn);
-			int newPosn = posn % size; // modulo
-			// System.out.println("Return image at position " + newPosn);
-			return (BufferedImage) imsList.get(newPosn);
-		}
-		return (BufferedImage) imsList.get(posn);
 	}
 }
