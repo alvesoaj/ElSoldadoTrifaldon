@@ -23,9 +23,12 @@ import java.util.HashMap;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import characters.Trifaldon;
-import sprites.CenarioAnimacao;
-import sprites.NuvensAnimacao;
+import animations.level1.CloudsAnimation;
+import animations.level1.SunAnimation;
+
+import sprites.Trifaldon;
+
+import utils.Constants;
 import utils.ImageLoader;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -76,9 +79,9 @@ public class GamePanel extends JPanel implements Runnable {
 	private Thread animator; // the thread that performs the animation
 	private volatile boolean running = false; // used to stop the animation
 												// thread
-	private volatile boolean isPaused = false;
+	private volatile boolean paused = false;
 
-	private long period; // period between drawing in _nanosecs_
+	private int period = 60; // period between drawing in _nanosecs_
 
 	// used at game termination
 	private volatile boolean gameOver = false;
@@ -94,27 +97,30 @@ public class GamePanel extends JPanel implements Runnable {
 	private static final long serialVersionUID = 1L;
 	private Trifaldon trifaldon;
 	private final int PERIODO = 100;
-	private BufferedImage chao, sol;
+	private ArrayList<BufferedImage> bImage;
+	private SunAnimation sun;
+	private CloudsAnimation clouds;
 	private CenarioAnimacao grama, grama2, casa;
-	private NuvensAnimacao nuvem1, nuvem2;
+	private BufferedImage ground;
 	private ImageLoader imageLoader;
 	private boolean justStarted = true;
 	private HashMap<String, ArrayList<BufferedImage>> imageMap;
 
+	private Graphics g;
+
 	public GamePanel(Container cont, final Dimension d) {
 		PWIDTH = d.width;
 		PHEIGHT = d.height;
-		
+
+		g = this.getGraphics();
+		super.paintComponent(g);
+
 		setPreferredSize(d);
 		setBackground(Color.CYAN);
-		
+
 		imageLoader = new ImageLoader();
 
-		imageMap = imageLoader.loadByFile("imagensConfig.wga");
-		
-		ArrayList<BufferedImage> trifaldonSprite = imageLoader.getSprite("spriteFormiga.png")
-		
-		trifaldon = new Trifaldon(trifaldonSprite);
+		imageMap = imageLoader.loadByFile("level-1.wga");
 
 		buildScenario();
 
@@ -124,93 +130,91 @@ public class GamePanel extends JPanel implements Runnable {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				keyDealer(e, "press");
+				keyAnalyzer(e, "press");
 			}
 		});
 
 		addKeyListener(new KeyAdapter() {
-
 			@Override
 			public void keyReleased(KeyEvent e) {
-				keyDealer(e, "release");
+				keyAnalyzer(e, "release");
 			}
 		});
 
-		// new Timer(PERIODO, this).start(); // start the Swing timer
+		startGame();
 	}
 
-	private void keyDealer(KeyEvent e, String tipo) {
+	// ------------- game life cycle methods ------------
+	// called from the applet's life cycle methods
+
+	// initialise and start the thread
+	public void startGame() {
+		if (animator == null || !running) {
+			animator = new Thread(this);
+			animator.start();
+		}
+	}
+
+	// start game /resume a paused game
+	public void resumeGame() {
+		paused = false;
+	}
+
+	public void pauseGame() {
+		paused = true;
+	}
+
+	// stop the thread by flag setting
+	public void stopGame() {
+		running = false;
+		finishOff();
+	}
+
+	// ----------------------------------------------
+
+	private void keyAnalyzer(KeyEvent e, String tipo) {
 		int key = e.getKeyCode();
 		if (tipo.compareTo("press") == 0) {
 			switch (key) {
 			case KeyEvent.VK_RIGHT:
-				trifaldon.setMovimento(2);
-				animarCenario(1);
+				trifaldon.setMovement(Constants.RIGHT);
 				break;
 			case KeyEvent.VK_LEFT:
-				trifaldon.setMovimento(3);
-				animarCenario(2);
+				trifaldon.setMovement(Constants.LEFT);
 				break;
 			case KeyEvent.VK_UP:
-				trifaldon.setMovimento(4);
+				trifaldon.setMovement(Constants.UP);
 				break;
 			}
 		} else if (tipo.compareTo("release") == 0) {
 			switch (key) {
 			case KeyEvent.VK_RIGHT:
 			case KeyEvent.VK_LEFT:
-				trifaldon.setMovimento(1);
+				trifaldon.setMovement(Constants.STOP);
 				break;
 			}
 		}
 	}
 
-	private void animarCenario(int tipo) {
-		if (tipo == 1) {
-			grama.setPosX(-3);
-			grama2.setPosX(-2);
-			casa.setPosX(-1);
-		} else {
-			grama.setPosX(3);
-			grama2.setPosX(2);
-			casa.setPosX(1);
-		}
-	}
-
 	private void buildScenario() {
-		chao = imageLoader.getImagem("chao");
+		bImage = imageLoader.getStaticImage("sun-1.png");
+		sun = new SunAnimation(bImage.get(0), 50, 150, period, 5);
 
-		sol = imageLoader.getImagem("sol");
-		nuvem1 = new NuvensAnimacao("nuvens", 0, 0, PERIODO, 0.2, -1,
-				imageLoader);
-		nuvem2 = new NuvensAnimacao("nuvens", 600, 0, PERIODO, 0.2, -1,
-				imageLoader);
-		grama = new CenarioAnimacao("grama", -100, 223, imageLoader);
-		grama2 = new CenarioAnimacao("grama2", -27, 340, imageLoader);
+		bImage = imageLoader.getStaticImage("cloud-1.png");
+		clouds = new CloudsAnimation(bImage.get(0), PERIODO, 5, PWIDTH,
+				PHEIGHT, 8);
+
 		casa = new CenarioAnimacao("casa", -27, 130, imageLoader);
 
-		trifaldon = new Trifaldon("spriteFormiga", 50, 0.5, 50, 357,
-				imageLoader);
-	}
+		grama = new CenarioAnimacao("grama", -100, 223, imageLoader);
 
-	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+		grama2 = new CenarioAnimacao("grama2", -27, 340, imageLoader);
 
-		g.drawImage(sol, 30, 30, this);
-		g.drawImage(nuvem1.getImagem(), nuvem1.getPosX(), nuvem1.getPosY(),
-				this);
-		g.drawImage(nuvem2.getImagem(), nuvem2.getPosX(), nuvem2.getPosY(),
-				this);
-		g.drawImage(casa.getImagem(), casa.getPosX(), casa.getPosY(), this);
-		g.drawImage(grama.getImagem(), grama.getPosX(), grama.getPosY(), this);
-		g.drawImage(grama2.getImagem(), grama2.getPosX(), grama2.getPosY(),
-				this);
-
-		g.drawImage(chao, 0, 390, this);
-
-		g.drawImage(trifaldon.getImagem(), trifaldon.getPosX(),
-				trifaldon.getPosY(), this);
+		bImage = imageLoader.getStaticImage("ground-1.png");
+		ground = bImage.get(0);
+		
+		bImage = imageLoader.getSprite("trifaldon-sprites.png");
+		trifaldon = new Trifaldon(bImage, 350, 250, period);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -289,7 +293,7 @@ public class GamePanel extends JPanel implements Runnable {
 	}
 
 	private void gameUpdate() {
-		if (!isPaused && !gameOver) {
+		if (!paused && !gameOver) {
 			// fred.move();
 		}
 	}
@@ -311,6 +315,22 @@ public class GamePanel extends JPanel implements Runnable {
 		dbg.setColor(Color.blue);
 		dbg.setFont(font);
 
+		g.drawImage(sol, 30, 30, this);
+		g.drawImage(nuvem1.getImagem(), nuvem1.getPosX(), nuvem1.getPosY(),
+				this);
+		g.drawImage(nuvem2.getImagem(), nuvem2.getPosX(), nuvem2.getPosY(),
+				this);
+		g.drawImage(casa.getImagem(), casa.getPosX(), casa.getPosY(), this);
+		g.drawImage(grama.getImagem(), grama.getPosX(), grama.getPosY(), this);
+		g.drawImage(grama2.getImagem(), grama2.getPosX(), grama2.getPosY(),
+				this);
+
+		g.drawImage(ground, 0, 565, this);
+		g.drawImage(ground, 500, 565, this);
+
+		g.drawImage(trifaldon.getImagem(), trifaldon.getPosX(),
+				trifaldon.getPosY(), this);
+
 		// report frame count & average FPS and UPS at top left
 		// dbg.drawString("Frame Count " + frameCount, 10, 25);
 		dbg.drawString(
@@ -330,9 +350,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 	// use active rendering to put the buffered image on-screen
 	private void paintScreen() {
-		Graphics g;
 		try {
-			g = this.getGraphics();
 			if ((g != null) && (dbImage != null))
 				g.drawImage(dbImage, 0, 0, null);
 			Toolkit.getDefaultToolkit().sync(); // sync the display on some
