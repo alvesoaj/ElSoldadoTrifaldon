@@ -2,13 +2,13 @@
 
 //e para Estaticas, sem ainmacao
 
-e sol.png
-e chao.png
-e nuvens.png
-e grama.png
-e grama2.png
-e casa.png
+e sun-1.png
+e ground-1.png
+e cloud-1.png
+e grass-1.png
+e grass-2.png
+e house-1.png
 
 //s para imagens animadas em Sprites
 
-s spriteFormiga.png 8
+s trifaldon-sprites.png 8

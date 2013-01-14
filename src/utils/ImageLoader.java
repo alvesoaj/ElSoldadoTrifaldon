@@ -95,7 +95,7 @@ public class ImageLoader {
 	private String getImageName(String line) {
 		StringTokenizer tokens = new StringTokenizer(line);
 
-		if (tokens.countTokens() == 2) {
+		if (tokens.countTokens() > 1 && tokens.countTokens() < 4) {
 			tokens.nextToken();
 			return tokens.nextToken();
 		} else {
@@ -164,7 +164,6 @@ public class ImageLoader {
 		} else {
 			tokens.nextToken();
 			tokens.nextToken();
-			System.out.print("o Line: ");
 			return Integer.parseInt(tokens.nextToken());
 		}
 	}

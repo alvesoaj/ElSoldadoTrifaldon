@@ -30,9 +30,9 @@ public class CloudsAnimation extends Animation {
 
 		for (int i = 0; i < cloudAmount; i++) {
 			int[] cloud = new int[2];
-			cloud[1] = (int) (Math.random() * PWIDTH);
-			cloud[2] = (int) (Math.random() * PHEIGHT);
-			cloudsPositions.add(cloud);
+			cloud[0] = (int) (Math.random() * PWIDTH);
+			cloud[1] = (int) (Math.random() * PHEIGHT);
+			// cloudsPositions.add(cloud);
 		}
 	}
 
@@ -41,9 +41,9 @@ public class CloudsAnimation extends Animation {
 		counter += 1;
 		if (counter % (occurrence / animationUpdateCounter) == 0) {
 			for (int i = 0; i < cloudAmount; i++) {
-				cloudsPositions.get(i)[1] -= 1;
-				if (cloudsPositions.get(i)[1] <= threshold) {
-					cloudsPositions.get(i)[1] = PWIDTH + 1;
+				cloudsPositions.get(i)[0] -= 1;
+				if (cloudsPositions.get(i)[0] <= threshold) {
+					cloudsPositions.get(i)[0] = PWIDTH + 1;
 				}
 			}
 		}

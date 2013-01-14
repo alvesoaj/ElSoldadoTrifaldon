@@ -26,23 +26,30 @@ public class Trifaldon extends Sprite {
 			int period) {
 		super(sprites, xPos, yPos, period);
 
-		ArrayList<BufferedImage> subImageList;
+		ArrayList<BufferedImage> subImageList = null;
+		for (int i = 0; i < 1; i++) {
+			subImageList.add(sprites.get(i));
+			stopAnimation = new SpriteAnimation(subImageList, period, 2, false);
+		}
 
-		subImageList = (ArrayList<BufferedImage>) sprites.subList(0, 0);
-		stopAnimation = new SpriteAnimation(subImageList, period, 2, false);
+		subImageList.clear();
+		for (int i = 4; i < 8; i++) {
+			subImageList.add(sprites.get(i));
+			rightAnimation = new SpriteAnimation(subImageList, period, 2, true);
+		}
 
-		subImageList = (ArrayList<BufferedImage>) sprites.subList(4, 7);
-		rightAnimation = new SpriteAnimation(subImageList, period, 2, true);
-
-		subImageList = (ArrayList<BufferedImage>) sprites.subList(0, 3);
-		leftAnimation = new SpriteAnimation(subImageList, period, 2, true);
+		subImageList.clear();
+		for (int i = 0; i < 4; i++) {
+			subImageList.add(sprites.get(i));
+			leftAnimation = new SpriteAnimation(subImageList, period, 2, true);
+		}
 
 		animation = stopAnimation;
 
 		contador = 0;
 	}
 
-	public BufferedImage getImagem() {
+	public BufferedImage getImage() {
 		return animation.getImage();
 	}
 
@@ -95,5 +102,10 @@ public class Trifaldon extends Sprite {
 			contador++;
 			System.out.print("dep: " + yPos + " - " + tempTotAnim + "\n");
 		}
+	}
+
+	@Override
+	public void update() {
+		animation.update();
 	}
 }

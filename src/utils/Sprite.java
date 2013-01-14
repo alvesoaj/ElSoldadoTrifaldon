@@ -25,17 +25,19 @@ public abstract class Sprite {
 		this.imagePosition = 0;
 	}
 
-	public BufferedImage getImagem() {
+	public BufferedImage getImage() {
 		return sprites.get(imagePosition);
 	}
 
-	public int getXPas() {
+	public int getXPos() {
 		return xPos;
 	}
 
 	public int getYpos() {
 		return yPos;
 	}
+
+	public abstract void update();
 
 	public abstract void setMovement(int movement);
 }

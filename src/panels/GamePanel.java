@@ -27,6 +27,8 @@ import animations.level1.CloudsAnimation;
 import animations.level1.SunAnimation;
 
 import sprites.Trifaldon;
+import sprites.level1.Grass;
+import sprites.level1.House;
 
 import utils.Constants;
 import utils.ImageLoader;
@@ -96,31 +98,26 @@ public class GamePanel extends JPanel implements Runnable {
 
 	private static final long serialVersionUID = 1L;
 	private Trifaldon trifaldon;
-	private final int PERIODO = 100;
 	private ArrayList<BufferedImage> bImage;
 	private SunAnimation sun;
 	private CloudsAnimation clouds;
-	private CenarioAnimacao grama, grama2, casa;
+	private House house;
+	private Grass grass1, grass2;
 	private BufferedImage ground;
 	private ImageLoader imageLoader;
 	private boolean justStarted = true;
 	private HashMap<String, ArrayList<BufferedImage>> imageMap;
 
-	private Graphics g;
-
 	public GamePanel(Container cont, final Dimension d) {
 		PWIDTH = d.width;
 		PHEIGHT = d.height;
-
-		g = this.getGraphics();
-		super.paintComponent(g);
 
 		setPreferredSize(d);
 		setBackground(Color.CYAN);
 
 		imageLoader = new ImageLoader();
 
-		imageMap = imageLoader.loadByFile("level-1.wga");
+		imageMap = imageLoader.loadByFile("level1.wga");
 
 		buildScenario();
 
@@ -167,7 +164,7 @@ public class GamePanel extends JPanel implements Runnable {
 	// stop the thread by flag setting
 	public void stopGame() {
 		running = false;
-		finishOff();
+		// finishOff();
 	}
 
 	// ----------------------------------------------
@@ -200,38 +197,24 @@ public class GamePanel extends JPanel implements Runnable {
 		bImage = imageLoader.getStaticImage("sun-1.png");
 		sun = new SunAnimation(bImage.get(0), 50, 150, period, 5);
 
-		bImage = imageLoader.getStaticImage("cloud-1.png");
-		clouds = new CloudsAnimation(bImage.get(0), PERIODO, 5, PWIDTH,
-				PHEIGHT, 8);
+		// bImage = imageLoader.getStaticImage("cloud-1.png");
+		// clouds = new CloudsAnimation(bImage.get(0), period, 5, PWIDTH,
+		// PHEIGHT, 8);
 
-		casa = new CenarioAnimacao("casa", -27, 130, imageLoader);
+		// bImage = imageLoader.getStaticImage("house-1.png");
+		// house = new House(bImage, -50, 0, period, PWIDTH, 6);
 
-		grama = new CenarioAnimacao("grama", -100, 223, imageLoader);
+		// bImage = imageLoader.getStaticImage("grass-1.png");
+		// grass1 = new Grass(bImage, -100, 0, period, PWIDTH, 5);
 
-		grama2 = new CenarioAnimacao("grama2", -27, 340, imageLoader);
+		// bImage = imageLoader.getStaticImage("grass-2.png");
+		// grass2 = new Grass(bImage, -200, 0, period, PWIDTH, 4);
 
 		bImage = imageLoader.getStaticImage("ground-1.png");
 		ground = bImage.get(0);
-		
-		bImage = imageLoader.getSprite("trifaldon-sprites.png");
-		trifaldon = new Trifaldon(bImage, 350, 250, period);
-	}
 
-	public void actionPerformed(ActionEvent e) {
-		if (justStarted) // don't do updates the first time through
-		{
-			justStarted = false;
-		} else {
-			atualizarImagens();
-		}
-
-		repaint();
-	}
-
-	private void atualizarImagens() {
-		trifaldon.atualizar();
-		nuvem1.atualizar();
-		nuvem2.atualizar();
+		// bImage = imageLoader.getSprite("trifaldon-sprites.png");
+		// trifaldon = new Trifaldon(bImage, 350, 250, period);
 	}
 
 	@Override
@@ -287,14 +270,19 @@ public class GamePanel extends JPanel implements Runnable {
 			}
 			framesSkipped += skips;
 
-			storeStats();
+			// storeStats();
 		}
-		finishOff();
+		// finishOff();
 	}
 
 	private void gameUpdate() {
 		if (!paused && !gameOver) {
-			// fred.move();
+			sun.update();
+			// clouds.update();
+			// house.update();
+			// grass1.update();
+			// grass2.update();
+			// trifaldon.update();
 		}
 	}
 
@@ -315,21 +303,21 @@ public class GamePanel extends JPanel implements Runnable {
 		dbg.setColor(Color.blue);
 		dbg.setFont(font);
 
-		g.drawImage(sol, 30, 30, this);
-		g.drawImage(nuvem1.getImagem(), nuvem1.getPosX(), nuvem1.getPosY(),
-				this);
-		g.drawImage(nuvem2.getImagem(), nuvem2.getPosX(), nuvem2.getPosY(),
-				this);
-		g.drawImage(casa.getImagem(), casa.getPosX(), casa.getPosY(), this);
-		g.drawImage(grama.getImagem(), grama.getPosX(), grama.getPosY(), this);
-		g.drawImage(grama2.getImagem(), grama2.getPosX(), grama2.getPosY(),
-				this);
+		dbg.drawImage(sun.getImage(), sun.getXPos(), sun.getYpos(), this);
+		// dbg.drawImage(clouds.getImage(), clouds.getXPos(),
+		// clouds.getYpos(),this);
+		// dbg.drawImage(house.getImage(), house.getXPos(), house.getYpos(),
+		// this);
+		// dbg.drawImage(grass1.getImage(), grass1.getXPos(),
+		// grass1.getYpos(),this);
+		// dbg.drawImage(grass2.getImage(), grass2.getXPos(),
+		// grass2.getYpos(),this);
 
-		g.drawImage(ground, 0, 565, this);
-		g.drawImage(ground, 500, 565, this);
+		dbg.drawImage(ground, 0, 565, this);
+		dbg.drawImage(ground, 500, 565, this);
 
-		g.drawImage(trifaldon.getImagem(), trifaldon.getPosX(),
-				trifaldon.getPosY(), this);
+		// g.drawImage(trifaldon.getImage(), trifaldon.getXPos(),
+		// trifaldon.getYpos(), this);
 
 		// report frame count & average FPS and UPS at top left
 		// dbg.drawString("Frame Count " + frameCount, 10, 25);
@@ -351,11 +339,11 @@ public class GamePanel extends JPanel implements Runnable {
 	// use active rendering to put the buffered image on-screen
 	private void paintScreen() {
 		try {
-			if ((g != null) && (dbImage != null))
-				g.drawImage(dbImage, 0, 0, null);
+			if ((this.getGraphics() != null) && (dbImage != null))
+				this.getGraphics().drawImage(dbImage, 0, 0, null);
 			Toolkit.getDefaultToolkit().sync(); // sync the display on some
 												// systems
-			g.dispose();
+			this.getGraphics().dispose();
 		} catch (Exception e) {
 			// quite commonly seen at applet destruction
 			System.out.println("Graphics Context error: " + e);

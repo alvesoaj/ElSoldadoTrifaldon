@@ -24,11 +24,11 @@ public abstract class Animation {
 		this.occurrence = this.period * this.duration;
 	}
 
-	public BufferedImage getImagem() {
+	public BufferedImage getImage() {
 		return image;
 	}
 
-	public int getXPas() {
+	public int getXPos() {
 		return xPos;
 	}
 

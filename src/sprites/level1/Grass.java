@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import utils.Constants;
 import utils.Sprite;
 
-public class House extends Sprite {
+public class Grass extends Sprite {
 
 	/**
 	 *
 	 */
 	private int movement, threshold, occurrence;
 
-	public House(ArrayList<BufferedImage> sprites, int xPos, int yPos,
+	public Grass(ArrayList<BufferedImage> sprites, int xPos, int yPos,
 			int period, int width, int duration) {
 		super(sprites, xPos, yPos, period);
 		this.threshold = (sprites.get(0).getWidth() - width) / 2;

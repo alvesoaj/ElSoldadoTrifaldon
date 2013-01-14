@@ -6,6 +6,7 @@ package animations.level1;
 import java.awt.image.BufferedImage;
 
 import utils.Animation;
+import utils.Constants;
 
 public class SunAnimation extends Animation {
 
@@ -28,16 +29,16 @@ public class SunAnimation extends Animation {
 		counter += 1;
 		if (counter % (occurrence / animationUpdateCounter) == 0) {
 			switch (movie) {
-			case 0:
+			case Constants.UP:
 				yPos -= 1;
 				if (yPos < (initialY - 100)) {
-					movie = 1;
+					movie = Constants.DOWN;
 				}
 				break;
-			case 1:
+			case Constants.DOWN:
 				yPos += 1;
-				if (yPos < (initialY + 100)) {
-					movie = 0;
+				if (yPos > (initialY + 100)) {
+					movie = Constants.UP;
 				}
 				break;
 			}
