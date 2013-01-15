@@ -8,4 +8,6 @@ public class Constants {
 	public final static int DOWN = 2;
 	public final static int JUMP = 0;
 	public final static int SHOT = 25;
+	
+	public final static int PERIOD = 100; // period between drawing in _nanosecs_
 }

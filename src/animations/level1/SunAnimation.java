@@ -4,6 +4,7 @@ package animations.level1;
  * @author ZeRoKoL
  */
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import utils.Animation;
 import utils.Constants;
@@ -17,9 +18,9 @@ public class SunAnimation extends Animation {
 	private int movie;
 	private int animationUpdateCounter = 150;
 
-	public SunAnimation(BufferedImage image, int xPos, int yPos, int period,
-			int duration) {
-		super(image, xPos, yPos, period, duration);
+	public SunAnimation(ArrayList<BufferedImage> images, int xPos, int yPos,
+			double duration) {
+		super(images, xPos, yPos, duration);
 		initialY = yPos;
 		movie = 0;
 	}

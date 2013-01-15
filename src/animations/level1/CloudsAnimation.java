@@ -18,15 +18,15 @@ public class CloudsAnimation extends Animation {
 	private ArrayList<int[]> cloudsPositions;
 	private int animationUpdateCounter = 150;
 
-	public CloudsAnimation(BufferedImage image, int period, int duration,
+	public CloudsAnimation(ArrayList<BufferedImage> images, int duration,
 			int w, int h, int ca) {
-		super(image, 0, 0, period, duration);
+		super(images, 0, 0, duration);
 
 		PWIDTH = w;
 		PHEIGHT = h;
 		cloudAmount = ca;
 
-		threshold = (image.getWidth() + 1) * -1;
+		threshold = (images.get(0).getWidth() + 1) * -1;
 
 		for (int i = 0; i < cloudAmount; i++) {
 			int[] cloud = new int[2];

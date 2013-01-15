@@ -83,8 +83,6 @@ public class GamePanel extends JPanel implements Runnable {
 												// thread
 	private volatile boolean paused = false;
 
-	private int period = 60; // period between drawing in _nanosecs_
-
 	// used at game termination
 	private volatile boolean gameOver = false;
 	private int score = 0;
@@ -195,7 +193,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 	private void buildScenario() {
 		bImage = imageLoader.getStaticImage("sun-1.png");
-		sun = new SunAnimation(bImage.get(0), 50, 150, period, 5);
+		sun = new SunAnimation(bImage, 50, 150, 5.0);
 
 		// bImage = imageLoader.getStaticImage("cloud-1.png");
 		// clouds = new CloudsAnimation(bImage.get(0), period, 5, PWIDTH,
@@ -237,7 +235,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 			afterTime = System.nanoTime();
 			timeDiff = afterTime - beforeTime;
-			sleepTime = (period - timeDiff) - overSleepTime;
+			sleepTime = (Constants.PERIOD - timeDiff) - overSleepTime;
 
 			if (sleepTime > 0) { // some time left in this cycle
 				try {
@@ -263,8 +261,8 @@ public class GamePanel extends JPanel implements Runnable {
 			 * required FPS.
 			 */
 			int skips = 0;
-			while ((excess > period) && (skips < MAX_FRAME_SKIPS)) {
-				excess -= period;
+			while ((excess > Constants.PERIOD) && (skips < MAX_FRAME_SKIPS)) {
+				excess -= Constants.PERIOD;
 				gameUpdate(); // update state but don't render
 				skips++;
 			}
@@ -292,8 +290,9 @@ public class GamePanel extends JPanel implements Runnable {
 			if (dbImage == null) {
 				System.out.println("dbImage is null");
 				return;
-			} else
+			} else {
 				dbg = dbImage.getGraphics();
+			}
 		}
 
 		// clear the background
@@ -327,10 +326,6 @@ public class GamePanel extends JPanel implements Runnable {
 
 		dbg.setColor(Color.black);
 
-		// draw game elements: the obstacles and the worm
-		// obs.draw(dbg);
-		// fred.draw(dbg);
-
 		if (gameOver) {
 			// gameOverMessage(dbg);
 		}
@@ -338,12 +333,14 @@ public class GamePanel extends JPanel implements Runnable {
 
 	// use active rendering to put the buffered image on-screen
 	private void paintScreen() {
+		Graphics g;
 		try {
-			if ((this.getGraphics() != null) && (dbImage != null))
-				this.getGraphics().drawImage(dbImage, 0, 0, null);
+			g = this.getGraphics();
+			if ((g != null) && (dbImage != null))
+				g.drawImage(dbImage, 0, 0, null);
 			Toolkit.getDefaultToolkit().sync(); // sync the display on some
 												// systems
-			this.getGraphics().dispose();
+			g.dispose();
 		} catch (Exception e) {
 			// quite commonly seen at applet destruction
 			System.out.println("Graphics Context error: " + e);

@@ -4,28 +4,30 @@ package utils;
  * @author ZeRoKoL
  */
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public abstract class Animation {
 
 	/**
 	 *
 	 */
-	protected int xPos, yPos, period, duration, counter, occurrence;
-	protected BufferedImage image;
+	protected int xPos, yPos, counter, imageIndex;
+	protected double duration, occurrence;
+	protected ArrayList<BufferedImage> images;
 
-	public Animation(BufferedImage image, int xPos, int yPos, int period,
-			int duration) {
-		this.image = image;
+	public Animation(ArrayList<BufferedImage> images, int xPos, int yPos,
+			double duration) {
+		this.images = images;
 		this.xPos = xPos;
 		this.yPos = yPos;
-		this.period = period;
 		this.duration = duration;
 		this.counter = 0;
-		this.occurrence = this.period * this.duration;
+		this.occurrence = Constants.PERIOD * this.duration;
+		this.imageIndex = 0;
 	}
 
 	public BufferedImage getImage() {
-		return image;
+		return images.get(imageIndex);
 	}
 
 	public int getXPos() {
