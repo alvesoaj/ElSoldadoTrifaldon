@@ -11,5 +11,5 @@ public class Constants {
 	
 	public final static int FPS = 60; // FPS desejado
 	
-	public final static long PERIOD = 1000/FPS; // period between drawing in _nanosecs_
+	public final static long PERIOD = (long) 1000.0/FPS; // period between drawing in _nanosecs_
 }

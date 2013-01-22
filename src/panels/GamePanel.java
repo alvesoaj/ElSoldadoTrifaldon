@@ -314,12 +314,12 @@ public class GamePanel extends JPanel implements Runnable {
 															// stats collection
 			totalElapsedTime += realElapsedTime;
 
-			double timingError = ((double) (realElapsedTime - statsInterval) / statsInterval) * 100.0;
+			// double timingError = ((double) (realElapsedTime - statsInterval) / statsInterval) * 100.0;
 
 			totalFramesSkipped += framesSkipped;
 
-			double actualFPS = 0; // calculate the latest FPS and UPS
-			double actualUPS = 0;
+			double actualFPS = 0.0; // calculate the latest FPS and UPS
+			double actualUPS = 0.0;
 			if (totalElapsedTime > 0) {
 				actualFPS = (((double) frameCount / totalElapsedTime) * 1000000000L);
 				actualUPS = (((double) (frameCount + totalFramesSkipped) / totalElapsedTime) * 1000000000L);
