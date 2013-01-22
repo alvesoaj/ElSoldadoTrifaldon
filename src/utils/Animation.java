@@ -27,15 +27,15 @@ public abstract class Animation {
 	}
 
 	public BufferedImage getImage() {
-		return images.get(imageIndex);
+		return this.images.get(imageIndex);
 	}
 
 	public int getXPos() {
-		return xPos;
+		return this.xPos;
 	}
 
 	public int getYpos() {
-		return yPos;
+		return this.yPos;
 	}
 
 	public abstract void update();

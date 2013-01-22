@@ -9,5 +9,7 @@ public class Constants {
 	public final static int JUMP = 0;
 	public final static int SHOT = 25;
 	
-	public final static int PERIOD = 100; // period between drawing in _nanosecs_
+	public final static int FPS = 60; // FPS desejado
+	
+	public final static long PERIOD = 1000/FPS; // period between drawing in _nanosecs_
 }

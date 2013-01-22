@@ -41,8 +41,8 @@ public class GamePanel extends JPanel implements Runnable {
 	private int PWIDTH; // size of panel
 	private int PHEIGHT;
 
-	private static long MAX_STATS_INTERVAL = 1000000000L;
-	// private static long MAX_STATS_INTERVAL = 1000L;
+	// private static long MAX_STATS_INTERVAL = 1000000000L;
+	private static long MAX_STATS_INTERVAL = 1000L;
 	// record stats every 1 second (roughly)
 
 	private static final int NO_DELAYS_PER_YIELD = 16;
@@ -136,6 +136,17 @@ public class GamePanel extends JPanel implements Runnable {
 			}
 		});
 
+		// set up message font
+		font = new Font("SansSerif", Font.BOLD, 15);
+		metrics = this.getFontMetrics(font);
+
+		fpsStore = new double[NUM_FPS];
+		upsStore = new double[NUM_FPS];
+		for (int i = 0; i < NUM_FPS; i++) {
+			fpsStore[i] = 0.0;
+			upsStore[i] = 0.0;
+		}
+
 		startGame();
 	}
 
@@ -193,7 +204,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 	private void buildScenario() {
 		bImage = imageLoader.getStaticImage("sun-1.png");
-		sun = new SunAnimation(bImage, 50, 150, 5.0);
+		sun = new SunAnimation(bImage, 25, 50, 5.0);
 
 		// bImage = imageLoader.getStaticImage("cloud-1.png");
 		// clouds = new CloudsAnimation(bImage.get(0), period, 5, PWIDTH,
@@ -268,9 +279,84 @@ public class GamePanel extends JPanel implements Runnable {
 			}
 			framesSkipped += skips;
 
-			// storeStats();
+			storeStats();
 		}
 		// finishOff();
+	}
+
+	private void storeStats() {
+		/*
+		 * The statistics: - the summed periods for all the iterations in this
+		 * interval (period is the amount of time a single frame iteration
+		 * should take), the actual elapsed time in this interval, the error
+		 * between these two numbers;
+		 * 
+		 * - the total frame count, which is the total number of calls to run();
+		 * 
+		 * - the frames skipped in this interval, the total number of frames
+		 * skipped. A frame skip is a game update without a corresponding
+		 * render;
+		 * 
+		 * - the FPS (frames/sec) and UPS (updates/sec) for this interval, the
+		 * average FPS & UPS over the last NUM_FPSs intervals.
+		 * 
+		 * The data is collected every MAX_STATS_INTERVAL (1 sec).
+		 */
+		frameCount++;
+		statsInterval += Constants.PERIOD;
+
+		if (statsInterval >= MAX_STATS_INTERVAL) { // record stats every
+													// MAX_STATS_INTERVAL
+			long timeNow = System.nanoTime();
+			timeSpentInGame = (int) ((timeNow - gameStartTime) / 1000000000L); // ns --> secs
+
+			long realElapsedTime = timeNow - prevStatsTime; // time since last
+															// stats collection
+			totalElapsedTime += realElapsedTime;
+
+			double timingError = ((double) (realElapsedTime - statsInterval) / statsInterval) * 100.0;
+
+			totalFramesSkipped += framesSkipped;
+
+			double actualFPS = 0; // calculate the latest FPS and UPS
+			double actualUPS = 0;
+			if (totalElapsedTime > 0) {
+				actualFPS = (((double) frameCount / totalElapsedTime) * 1000000000L);
+				actualUPS = (((double) (frameCount + totalFramesSkipped) / totalElapsedTime) * 1000000000L);
+			}
+
+			// store the latest FPS and UPS
+			fpsStore[(int) statsCount % NUM_FPS] = actualFPS;
+			upsStore[(int) statsCount % NUM_FPS] = actualUPS;
+			statsCount = statsCount + 1;
+
+			double totalFPS = 0.0; // total the stored FPSs and UPSs
+			double totalUPS = 0.0;
+			for (int i = 0; i < NUM_FPS; i++) {
+				totalFPS += fpsStore[i];
+				totalUPS += upsStore[i];
+			}
+
+			if (statsCount < NUM_FPS) { // obtain the average FPS and UPS
+				averageFPS = totalFPS / statsCount;
+				averageUPS = totalUPS / statsCount;
+			} else {
+				averageFPS = totalFPS / NUM_FPS;
+				averageUPS = totalUPS / NUM_FPS;
+			}
+			/*
+			 * System.out.println(timedf.format( (double)
+			 * statsInterval/1000000000L) + " " + timedf.format((double)
+			 * realElapsedTime/1000000000L) + "s " + df.format(timingError) +
+			 * "% " + frameCount + "c " + framesSkipped + "/" +
+			 * totalFramesSkipped + " skip; " + df.format(actualFPS) + " " +
+			 * df.format(averageFPS) + " afps; " + df.format(actualUPS) + " " +
+			 * df.format(averageUPS) + " aups" );
+			 */
+			framesSkipped = 0;
+			prevStatsTime = timeNow;
+			statsInterval = 0L; // reset
+		}
 	}
 
 	private void gameUpdate() {
@@ -322,7 +408,9 @@ public class GamePanel extends JPanel implements Runnable {
 		// dbg.drawString("Frame Count " + frameCount, 10, 25);
 		dbg.drawString(
 				"Average FPS/UPS: " + df.format(averageFPS) + ", "
-						+ df.format(averageUPS), 20, 25); // was (10,55)
+						+ df.format(averageUPS), 10, 20); // was (10,55)
+		dbg.drawString("Time spent: " + timeSpentInGame + " s", 10, 40); // was
+																			// (10,55)
 
 		dbg.setColor(Color.black);
 
